@@ -5,10 +5,11 @@ const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
-  entry: './src/js/main.js',
+  entry: './src/index.js',
   output: {
-    filename: 'main.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
   devServer: {
     static: path.resolve(__dirname, 'dist'),
@@ -23,30 +24,27 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: 'asset',
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+      { test: /\.css$/, use: ['style-loader', 'css-loader', 'postcss-loader'] },
+      {
+        test: /\.scss$/,
+        use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
       },
       {
-        test: /\.(scss)$/,
-        use: [
-          {
-            loader: 'style-loader',
-          },
-          {
-            loader: 'css-loader',
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: () => [require('autoprefixer')],
-              },
-            },
-          },
-          {
-            loader: 'sass-loader',
-          },
-        ],
+        test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        use: 'url-loader?limit=10000',
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
+        use: 'file-loader',
       },
     ],
   },
@@ -55,9 +53,12 @@ const config = {
 module.exports = () => {
   if (isProduction) {
     config.mode = 'production';
+
     config.plugins.push(new WorkboxWebpackPlugin.GenerateSW());
   } else {
     config.mode = 'development';
   }
   return config;
 };
+
+1;
