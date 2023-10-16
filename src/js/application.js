@@ -3,9 +3,8 @@ import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import * as _ from 'lodash';
-
-import render from './view.js';
 import ru from './locales/ru.js';
+import render from './view.js';
 
 const init = async () => {
   i18next
@@ -28,12 +27,10 @@ const init = async () => {
       });
     });
 };
-
 const validate = async (url, state) => {
   const urlSchema = yup.string().required().url().notOneOf(state.data.urls);
   return urlSchema.validate(url, { abortEarly: false });
 };
-
 const parseFeed = (contents) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(contents, 'text/xml');
@@ -57,12 +54,12 @@ const parseFeed = (contents) => {
   });
   return { feed, posts };
 };
-
 const addNewPosts = (posts, state) => {
   const newPosts = posts.filter((post) => _.findIndex(state.data.posts, { guid: post.guid }) < 0);
-  state.data.posts.push(...newPosts);
+  if (newPosts.length > 0) {
+    state.data.posts = [...state.data.posts, ...newPosts]; // eslint-disable-line no-param-reassign
+  }
 };
-
 const checkFeedsUpdate = (state) => {
   const promises = state.data.feeds.map((feed) =>
     axios
@@ -77,20 +74,31 @@ const checkFeedsUpdate = (state) => {
   );
   return Promise.all(promises);
 };
-
 const app = () => {
+  // Model
   const state = {
     data: {
       currentUrl: '',
       urls: [],
       feeds: [],
       posts: [],
+      seenGuids: [],
     },
     error: null,
     status: '',
   };
-
+  // View
   const watchedState = onChange(state, (path, current, previous) => render(watchedState, path, current, previous, i18next));
+
+  // Controller
+  const exampleModal = document.querySelector('#modal');
+  exampleModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    const guid = button.getAttribute('data-bs-guid');
+    if (!watchedState.data.seenGuids.includes(guid)) {
+      watchedState.data.seenGuids = [guid, ...watchedState.data.seenGuids];
+    }
+  });
 
   const form = document.querySelector('form');
   const inputElement = document.querySelector('input');
@@ -108,6 +116,7 @@ const app = () => {
         axios
           .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.data.currentUrl)}`)
           .then((response) => {
+            // handle success
             const { feed, posts } = parseFeed(response.data.contents);
             feed.url = watchedState.data.currentUrl;
             watchedState.data.urls = [...watchedState.data.urls, value];
@@ -140,10 +149,8 @@ const app = () => {
     console.log('checkFeedsUpdate');
     checkFeedsUpdate(watchedState).then(() => setTimeout(fetchFeeds, 5000));
   };
-
   setTimeout(fetchFeeds, 5000);
 };
-
 export default () => {
   init().then(() => app());
 };
