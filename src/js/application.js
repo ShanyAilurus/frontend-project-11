@@ -84,7 +84,7 @@ const app = () => {
       posts: [],
       seenGuids: [],
     },
-    error: null,
+    feedback: null,
     status: '',
   };
   // View
@@ -111,7 +111,7 @@ const app = () => {
     validate(value, watchedState)
       .then(() => {
         console.log(`valid currentUrl = ${value}`);
-        watchedState.error = null;
+        watchedState.feedback = i18next.t('forms.isLoading');
         watchedState.status = 'sending';
         axios
           .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.data.currentUrl)}`)
@@ -123,26 +123,27 @@ const app = () => {
             watchedState.data.feeds = [...watchedState.data.feeds, feed];
             addNewPosts(posts, watchedState);
             watchedState.data.currentUrl = '';
-            watchedState.status = 'ready';
+            watchedState.feedback = i18next.t('forms.success');
+            watchedState.status = 'success';
           })
           .catch((error) => {
             console.log(error);
             switch (error.name) {
               case 'TypeError':
-                watchedState.error = i18next.t('errors.invalidXml');
+                watchedState.feedback = i18next.t('errors.invalidXml');
                 break;
               case 'AxiosError':
-                watchedState.error = i18next.t('errors.network');
+                watchedState.feedback = i18next.t('errors.network');
                 break;
               default:
-                watchedState.error = i18next.t('errors.unexpected');
+                watchedState.feedback = i18next.t('errors.unexpected');
             }
-            watchedState.status = 'ready';
+            watchedState.status = 'error';
           });
       })
       .catch((error) => {
-        console.log(`set watchedState.error = ${error}`);
-        [watchedState.error] = error.errors;
+        [watchedState.feedback] = error.errors;
+        watchedState.status = 'error';
       });
   });
   const fetchFeeds = () => {

@@ -11,11 +11,11 @@
         <h1>RSS-агрегатор</h1>
         <form data-form="add-feed" method="post">
           <div class="input-group mb-3">
-            <input type="text" autofocus requiered class="form-control" placeholder="введите url" aria-label="URL RSS-фида" />
+            <input id="input" type="text" autofocus requiered class="form-control" placeholder="введите url" aria-label="URL RSS-фида" />
             <button id="addbutton" class="btn btn-primary" type="submit">Добавить</button>
-            <div id="validationServerUsernameFeedback" class="invalid-feedback">Error</div>
           </div>
           <span>Пример: https://lorem-rss.hexlet.app/feed</span>
+          <div id="feedback" class="text-success"></div>
         </form>
       </section>
       <section class="container-fluid p-5">
