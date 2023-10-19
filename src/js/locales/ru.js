@@ -9,7 +9,7 @@ export default {
       },
     },
     errors: {
-      invalidXml: 'Ресурс не содержит валидный RSS',
+      xmlParseError: 'Ресурс не содержит валидный RSS',
       network: 'Ошибка сети',
       unexpected: 'Произошла непредвиденная ошибка',
     },
