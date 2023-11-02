@@ -7,6 +7,8 @@ export default {
         url: 'Ссылка должна быть валидным URL',
         notUnique: 'RSS уже существует',
       },
+      isLoading: 'Идет загрузка фида RSS',
+      success: 'RSS успешно загружен',
     },
     errors: {
       xmlParseError: 'Ресурс не содержит валидный RSS',
