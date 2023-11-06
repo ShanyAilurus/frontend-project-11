@@ -122,17 +122,16 @@ const app = (i18nextInstance) => {
 
   const repeatIntervalMs = 5000;
   const fetchFeeds = () => {
-    const promises = watchedState.data.feeds.map((feed) =>
-      getFeed(feed.url)
+    const promises = watchedState.data.feeds
+      .map((feed) => getFeed(feed.url)
         .then((response) => {
           const { posts } = parse(response.data.contents);
           addNewPosts(posts, watchedState);
-        })
-        .catch((error) => {
+        }).catch((error) => {
           console.log(error);
-        })
-    );
-    Promise.all(promises).finally(() => setTimeout(fetchFeeds, repeatIntervalMs));
+        }));
+    Promise.all(promises)
+      .finally(() => setTimeout(fetchFeeds, repeatIntervalMs));
   };
   setTimeout(fetchFeeds, repeatIntervalMs);
 };
