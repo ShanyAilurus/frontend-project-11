@@ -1,14 +1,13 @@
 /* eslint no-param-reassign: ["error",
 { "props": true, "ignorePropertyModificationsFor": ["watchedState"] }] */
-import onChange from 'on-change';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import * as _ from 'lodash';
 
-import render from './view.js';
+import watch from './view.js';
 import parse from './parse.js';
-import resources from './locales/index.js';
+import resources from './ru.js';
 
 const init = async () => {
   const i18nextInstance = i18next.createInstance();
@@ -72,10 +71,7 @@ const markPostSeen = (guid, watchedState) => {
 
 const app = (i18nextInstance) => {
   const state = buildInitialState();
-  const watchedState = onChange(state, (path, current, previous) => {
-    render(watchedState, path, current, previous, i18nextInstance);
-  });
-
+  const watchedState = watch(state, i18nextInstance);
   const exampleModal = document.querySelector('#modal');
   exampleModal.addEventListener('show.bs.modal', (event) => {
     const button = event.relatedTarget;
