@@ -1,9 +1,9 @@
-export default {
+const ru = {
   translation: {
     forms: {
       viewButton: 'Просмотр',
       validation: {
-        required: 'Не должно быть пустым',
+        required: 'Поле поиска не должно быть пустым',
         url: 'Ссылка должна быть валидным URL',
         notUnique: 'RSS уже существует',
       },
@@ -17,3 +17,5 @@ export default {
     },
   },
 };
+
+export default { ru };

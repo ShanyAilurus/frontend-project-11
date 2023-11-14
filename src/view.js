@@ -1,6 +1,7 @@
 /* eslint no-param-reassign: ["error",
 { "props": true, "ignorePropertyModificationsFor": ["ui"] }] */
 import * as _ from 'lodash';
+import onChange from 'on-change';
 
 const renderFeeds = (feeds, feedsContainer) => {
   const list = document.createElement('ul');
@@ -107,29 +108,33 @@ const checkPostSeen = (guid, postsContainer) => {
   link.classList.remove('fw-bold');
 };
 
-const render = (state, path, value, _previous, i18next) => {
+const watch = (state, i18next) => {
   const ui = buildUiRefs();
-  switch (path) {
-    case 'errorMessage':
-      break;
-    case 'data.feeds':
-      renderFeeds(value, ui.feedsContainer);
-      break;
-    case 'addFeedStatus':
-      renderStatus(value, state, ui, i18next);
-      break;
-    case 'currentGuid':
-      renderModal(state, ui.modal);
-      checkPostSeen(value, ui.postsContainer);
-      break;
-    case 'seenGuids':
-      break;
-    case 'data.posts':
-      renderPosts(state, ui.postsContainer, i18next);
-      break;
-    default:
-      throw Error(`unknown path: ${path}`);
-  }
+  const watchedState = onChange(state, (path, value) => {
+    switch (path) {
+      case 'errorMessage':
+        break;
+      case 'data.feeds':
+        renderFeeds(value, ui.feedsContainer);
+        break;
+      case 'addFeedStatus':
+        renderStatus(value, watchedState, ui, i18next);
+        break;
+      case 'currentGuid':
+        renderModal(watchedState, ui.modal);
+        checkPostSeen(value, ui.postsContainer);
+        break;
+      case 'seenGuids':
+        break;
+      case 'data.posts':
+        renderPosts(watchedState, ui.postsContainer, i18next);
+        break;
+      default:
+        throw Error(`unknown path: ${path}`);
+    }
+    renderPosts(watchedState, ui.postsContainer, i18next);
+  });
+  return watchedState;
 };
 
-export default render;
+export default watch;

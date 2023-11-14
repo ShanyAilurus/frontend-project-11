@@ -10,7 +10,7 @@ test:
 develop:
 	npx webpack serve
 
-run build:
+build:
 	NODE_ENV=production npx webpack
 
 .PHONY: test
