@@ -11,13 +11,12 @@ import resources from './ru.js';
 
 const init = async () => {
   const i18nextInstance = i18next.createInstance();
-  return i18nextInstance
-    .init({
-      lng: 'ru',
-      debug: true,
-      resources,
-    })
-    .then(() => i18nextInstance);
+  await i18nextInstance.init({
+    lng: 'ru',
+    debug: true,
+    resources,
+  });
+  return i18nextInstance;
 };
 
 const validate = async (url, urls) => {
@@ -69,9 +68,22 @@ const markPostSeen = (guid, watchedState) => {
   }
 };
 
+const buildUiRefs = () => {
+  const ui = {
+    inputElement: document.querySelector('#input'),
+    addbuttonElement: document.querySelector('#addbutton'),
+    feedback: document.querySelector('#feedback'),
+    feedsContainer: document.querySelector('#feeds'),
+    postsContainer: document.querySelector('#posts'),
+    modal: document.querySelector('#modal'),
+  };
+  return ui;
+};
+
 const app = (i18nextInstance) => {
   const state = buildInitialState();
-  const watchedState = watch(state, i18nextInstance);
+  const elements = buildUiRefs();
+  const watchedState = watch(elements, state, i18nextInstance);
   const exampleModal = document.querySelector('#modal');
   exampleModal.addEventListener('show.bs.modal', (event) => {
     const button = event.relatedTarget;
